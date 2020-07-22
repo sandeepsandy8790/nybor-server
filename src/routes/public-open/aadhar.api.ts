@@ -107,5 +107,9 @@ export class AadharRoutes {
         );
       }
     );
+
+    router.get('/',(req,res)=>{
+      res.send("hello")
+    })
   }
 }

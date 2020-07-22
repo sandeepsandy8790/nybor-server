@@ -7,13 +7,13 @@ var http = require("http");
 var https = require("https");
 var fs = require("fs");
 
-var express=require('express')
+
 
 
 
 
 var port;
-var app=express();
+var app;
 var server;
 
 
@@ -27,16 +27,12 @@ CreateHTTPServer();
  */
 function CreateHTTPServer()
 {
-  var server = app.listen(process.env.PORT || 5000, function () {
-    var port = server.address().port;
-    console.log("Express is working on port " + port);
-  });
-    // port = normalizePort(process.env.PORT || 3080);
-    // app = server.SrishtiServer.bootstrap().app;
-    // app.set("port", port);
-    // server = http.createServer(app);
-    // server.listen(port);
-    // BindServerLifecycleEvents();
+    port = normalizePort(process.env.PORT || 3000);
+    app = server.SrishtiServer.bootstrap().app;
+    app.set("port", port);
+    server = http.createServer(app);
+    server.listen(port);
+    BindServerLifecycleEvents();
 }
 
 /**
