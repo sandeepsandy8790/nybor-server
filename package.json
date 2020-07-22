@@ -61,5 +61,10 @@
     "@plugins": "dist/plugins/",
     "@routes": "dist/routes/",
     "@config": "dist/config/"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
+    "typescript": "^3.6.3"
   }
 }
