@@ -17,7 +17,7 @@ import * as multer from 'multer';
 import { NextFunction, Request, Response, Router } from "express";
 
 const path = require("path");
-
+var favicon=require('serve-favicon')
 require('dotenv').config({ path:  path.join(__dirname, "config/dev.env")} );
 
 /* implementing redis cache */
@@ -105,7 +105,7 @@ export class SrishtiServer
     //console.log("Passing :"+__dirname);
     this.app.use(express.static(path.join(__dirname, "../uploads")));
     this.app.use(logger("dev"));
-
+    this.app.use(favicon(path.join(__dirname,  'public', 'favicon.ico')))
 
 
 
