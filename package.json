@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc ./src/plugins/routeconfig.plugin.ts && node ./src/plugins/routeconfig.plugin ",
-    "start": "npm run-script build && del .\\src\\plugins\\*.plugin.js && tsc && copy .\\src\\config\\env\\dev.env .\\dist\\config\\ && node ./bin/www",
+    "start": "node server.ts",
     "module": "tsc ./src/plugins/srishtimodule.plugin.ts && node ./src/plugins/srishtimodule.plugin && del .\\src\\plugins\\*.plugin.js"
   },
   "keywords": [
