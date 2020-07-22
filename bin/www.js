@@ -27,7 +27,7 @@ CreateHTTPServer();
  */
 function CreateHTTPServer()
 {
-    port = normalizePort(process.env.PORT || 3000);
+    port = normalizePort(process.env.PORT || 3080);
     app = server.SrishtiServer.bootstrap().app;
     app.set("port", port);
     server = http.createServer(app);
