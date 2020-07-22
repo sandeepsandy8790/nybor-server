@@ -1,0 +1,60 @@
+{
+  "name": "srishti-server-unframework",
+  "version": "1.0.0",
+  "description": "Srishti TypeScript Compliant Server Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc ./src/plugins/routeconfig.plugin.ts && node ./src/plugins/routeconfig.plugin ",
+    "start": "npm run-script build && del .\\src\\plugins\\*.plugin.js && tsc && copy .\\src\\config\\env\\dev.env .\\dist\\config\\ && node ./bin/www",
+    "module": "tsc ./src/plugins/srishtimodule.plugin.ts && node ./src/plugins/srishtimodule.plugin && del .\\src\\plugins\\*.plugin.js"
+  },
+  "keywords": [
+    "Srishti",
+    "TypeScript",
+    "NodeJS"
+  ],
+  "author": "Albus Dumbledore",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^10.12.12",
+    "bcryptjs": "^2.4.3",
+    "bson": "^4.0.0",
+    "cookie-parser": "^1.4.3",
+    "crypto": "^1.0.1",
+    "dotenv": "^6.2.0",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.4",
+    "express-session": "^1.15.6",
+    "handlebars": "^4.0.12",
+    "jsonwebtoken": "^8.4.0",
+    "lusca": "^1.6.1",
+    "mathjs": "^5.4.2",
+    "method-override": "^3.0.0",
+    "module-alias": "^2.1.0",
+    "moment": "^2.22.2",
+    "moment-timezone": "^0.5.23",
+    "mongoose": "^5.3.12",
+    "morgan": "^1.9.1",
+    "multer": "^1.4.1",
+    "otpauth": "^3.2.1",
+    "otplib": "^10.0.1",
+    "prompt": "^1.0.0",
+    "q": "^1.5.1",
+    "shortid": "^2.2.14",
+    "sugar": "^2.0.4",
+    "totp": "0.0.1",
+    "twilio": "^3.48.0",
+    "typescript": "^3.1.6",
+    "underscore": "^1.9.1"
+  },
+  "_moduleAliases": {
+    "@root": ".",
+    "@managers": "dist/managers/",
+    "@middleware": "dist/middleware/",
+    "@modules": "dist/modules/",
+    "@plugins": "dist/plugins/",
+    "@routes": "dist/routes/",
+    "@config": "dist/config/"
+  }
+}

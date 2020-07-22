@@ -1,0 +1,17 @@
+{
+    "id": "X5kmOUXHc",
+    "schoolName": "JSON Test School - Updated",
+    "address" :"180 Forbes Road",
+    "contactNumber": "9908677500",
+    "email": "school@gmail.com",
+    "startTime":"9:00",
+    "endTime":"14:00",
+    "classes": [
+                   {"standard": "1" , "sections": ["A", "B", "C"]},
+                   {"standard": "2" , "sections": ["A", "B", "C", "D"]},
+                   {"standard": "3" , "sections": ["Elementary", "B", "C", "D"]},
+                   {"standard": "4" , "sections": ["A", "B", "C", "D"]},
+                   {"standard": "5" , "sections": ["A", "B", "C", "D"]}
+    ],
+    "isActive":true
+}

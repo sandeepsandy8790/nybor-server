@@ -1,0 +1,29 @@
+{  
+   
+
+    "compilerOptions": {
+        
+        "moduleResolution": "node",
+        "experimentalDecorators": true,
+        "noImplicitAny": false,
+        "target": "es6",
+        "module": "commonjs",
+        "removeComments": false, // set this to true during build
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "lib": ["dom", "es2015.promise", "es6"],
+        "baseUrl": "./src",
+        "paths":
+         {
+            "@managers/*": ["managers/*"],
+            "@middleware/*": ["middleware/*"],
+            "@modules/*": ["modules/*"],
+            "@plugins/*": ["plugins/*"],
+            "@routes/*": ["routes/*"],
+            "@config/*": ["config/*"],
+        },
+    }
+}
+
+
+
