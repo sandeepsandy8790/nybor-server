@@ -50,7 +50,7 @@ export class Authorization {
 
             console.log("Decoded :" + decoded);
 
-            if (decoded != null) { req.body.aadharID = decoded.id; next(); }
+            if (decoded != null) { req.body.userID = decoded.id; next(); }
             else { return res.status(501).send({ message: CustomErrors.INVALID_TOKEN }); }
         }
         catch (error) {

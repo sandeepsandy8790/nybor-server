@@ -66,7 +66,8 @@ export class AadharRoutes {
     const EnsureAuth = Authentication.EnsureAuth;
     const EnsureTemporaryLogin = Authorization.EnsureTemporaryLogin;
     const ExtractAadhar = Authentication.ExtractAadharCard;
-    const OTPParser=this.OTPParser
+    const OTPParser=this.OTPParser;
+    const EnsureUserLogin = Authorization.EnsureUserLogin;
     /**
      * THIS IS A COMMON LOGIN ROUTE
      * SUCCESSFUL LOGIN DOESN'T GAURENTEE YOU ACCESS
@@ -110,6 +111,28 @@ export class AadharRoutes {
 
     router.get('/',(req,res)=>{
       res.send("hello")
+    })
+
+    router.post("/updateProfile",EnsureAuth,EnsureUserLogin,ExtractAadhar, async(req,res)=>{
+      let response: IResponse = {};
+      let p:IAadhar=new IAadhar();
+      console.log(JSON.stringify(req.body), "personal profile");
+      p=req.body.personalProfile;
+      p.id=req.body.aadhar.id;
+      p.dateofBirth = req.body.personalProfile.date + "-" + req.body.personalProfile.month + "-" + req.body.personalProfile.year;
+      p.profileCompletion=true;
+      response = await CrudManager.Update(p);
+      if(response.result!=null&&response.error==null){
+        console.log("if")
+        response.status=STATUS.OK;
+        response.result=response.result;
+      }
+      else{
+        console.log("else")
+        response.status=STATUS.AUTHERROR;
+        response.result=null
+      }
+      res.send(response)
     })
   }
 }
