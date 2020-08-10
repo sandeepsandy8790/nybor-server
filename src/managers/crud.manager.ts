@@ -219,7 +219,28 @@ export class CrudManager
         return this.crudResponse;
         
     }
-
+    public static async UpdateOne(data): Promise<IResponse> {
+        this.crudResponse = {};
+        await this.Bootstrap(data);
+        data = this.RemoveSchemaFootprint(data);
+    
+        try {
+          let results;
+          results = await this.mongooseModel.update({ id: data.id }, data).exec();
+          this.crudResponse.result = results;
+          this.crudResponse.status = STATUS.OK;
+          this.crudResponse.error = null;
+        } catch (error) {
+          console.log("CRUD Error :" + error);
+          console.error("You may want to create a new object of your model");
+          console.error("And copy the variables as Srishti removes the scehema information");
+          this.crudResponse.result = null;
+          this.crudResponse.status = STATUS.IOERROR;
+          this.crudResponse.error = error;
+        }
+    
+        return this.crudResponse;
+      }
     public static async Delete(data)
     {
             this.crudResponse = {};
