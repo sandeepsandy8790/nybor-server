@@ -126,8 +126,8 @@ export class AadharRoutes {
       }
     );
 
-    router.get('/', (req, res) => {
-      res.send("hello")
+    router.get('/hello', (req, res) => {
+      res.send("hello server deployed")
     })
 
     router.post("/updateProfile", EnsureAuth, EnsureUserLogin, ExtractAadhar, async (req, res) => {
