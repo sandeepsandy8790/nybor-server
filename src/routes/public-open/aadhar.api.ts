@@ -5,8 +5,9 @@ import { IUser, IUserRole, UserPlugin } from "@plugins/user.plugin";
 import { Authorization } from "@middleware/authorization";
 import { CustomErrors } from "@plugins/error.plugin";
 import { Authentication } from "@middleware/authentication";
-import { IAadhar } from "@modules/aadhars/aadhar.model";
+import { IAadhar, IKYCSTATUS } from "@modules/aadhars/aadhar.model";
 import { OtpPlugin, IOTP } from "@plugins/otp.plugin";
+import { IKYC } from "@modules/aadhars/kyc/kyc.model";
 
 const path = require('path');
 var multer = require('multer');
@@ -31,10 +32,10 @@ var upload = multer({
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, path.join(appRoot.path, 'uploads/kycDocuments'))
+    cb(null, path.join(appRoot.path, 'uploads/kycDocuments'))
   },
   filename: function (req, file, cb) {
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
   }
 })
 
@@ -269,53 +270,124 @@ export class AadharRoutes {
       ExtractAadhar,
       async (req, res) => {
         let response: IResponse = {}
-        let response2:IResponse={}
+        let response2: IResponse = {}
         console.log(JSON.stringify(req.body))
         let otp = req.body.otp;
-        let mobile=req.body.mobileNumber;
+        let mobile = req.body.mobileNumber;
         let aadhar: IAadhar = req.body.aadhar;
 
 
         response = await OtpPlugin.Validate_OTP_ChangeMobileNUmber(otp, aadhar, true)
-        console.log(response.token+"otp validation responseeee")
-        if(response.status==STATUS.OK && response.error==null){
+        console.log(response.token + "otp validation responseeee")
+        if (response.status == STATUS.OK && response.error == null) {
           console.log("first if")
-          let newaadhar:IAadhar=new IAadhar();
-          newaadhar.id=aadhar.id;
-          newaadhar.mobileNumber=mobile;
-          console.log(JSON.stringify(newaadhar)+"aadhaaaar")
-          response2=await CrudManager.Update(newaadhar);
-          console.log(JSON.stringify(response2)+"updation responseese")
-          if(response2.status==STATUS.OK && response2.error==null){
+          let newaadhar: IAadhar = new IAadhar();
+          newaadhar.id = aadhar.id;
+          newaadhar.mobileNumber = mobile;
+          console.log(JSON.stringify(newaadhar) + "aadhaaaar")
+          response2 = await CrudManager.Update(newaadhar);
+          console.log(JSON.stringify(response2) + "updation responseese")
+          if (response2.status == STATUS.OK && response2.error == null) {
             console.log("second ifff")
-            response.result=response2.result;
-            response.status=STATUS.OK;
-            response.token=response.token;
+            response.result = response2.result;
+            response.status = STATUS.OK;
+            response.token = response.token;
           }
-          else{
+          else {
             console.log("second else")
-            response.result=null;
-            response.status=STATUS.IOERROR;
-            response.token=response.token;
+            response.result = null;
+            response.status = STATUS.IOERROR;
+            response.token = response.token;
           }
         }
-        else{
+        else {
           console.log("first else")
           response.result = null;
           response.error = CustomErrors.INVALID_OTP;
           response.status = STATUS.AUTHERROR;
-          response.token=response.token;
+          response.token = response.token;
         }
         res.send(response)
       }
-      
+
     );
 
     router.post("/kyc/kyc-file", upload2.single('kycFile'), async (req: any, res) => {
 
       const { length: l, [l - 1]: fileName } = req.file.filename.split('/');
-      console.log("req.file", req.file, fileName , "kyc");
+      console.log("req.file", req.file, fileName, "kyc");
       res.send({ ...req.file, name: fileName })
-  });
+    });
+
+
+
+
+    router.post("/kyc/kyc-update", EnsureAuth, EnsureUserLogin, ExtractAadhar, async (req, res) => {
+      let response: IResponse = {};
+      // let kyc: IKYC = new IKYC();
+      // console.log(JSON.stringify(req.body.aadhar), "KYC Update profile");
+      // kyc.aadharID = req.body.aadhar.id;
+      // response = await CrudManager.Read(kyc)
+      // console.log(response.result,"@@@@@@@@@@@@@@@@@@")
+      // if (response.result.length >=1 && response.error == null && response.status == STATUS.OK) {
+      //   console.log("inside Update---------------->")
+      //   let kyc_update: IKYC = new IKYC();
+      //   kyc_update.id = response.result[0].id;
+      //   kyc_update.documentType = req.body.documentType;
+      //   kyc_update.fileInput = req.body.fileInput;
+      //   kyc_update.aadharID = req.body.aadhar.id;
+      //   response = await CrudManager.Update(kyc_update);
+      //   if (response.result != null && response.error == null) {
+      //     console.log("if")
+      //     response.status = STATUS.OK;
+      //     response.result = response.result;
+      //   }
+      //   else {
+      //     console.log("else")
+      //     response.status = STATUS.AUTHERROR;
+      //     response.result = null
+      //   }
+      // }
+      // else {
+      console.log("inside create---------------->")
+      let kyc_create: IKYC = new IKYC();
+      kyc_create.documentType = req.body.documentType;
+      kyc_create.fileInput = req.body.fileInput;
+      kyc_create.aadharID = req.body.aadhar.id;
+      response = await CrudManager.Create(kyc_create);
+      if (response.result != null && response.error == null) {
+        let aadhar: IAadhar = new IAadhar();
+        aadhar.kycStatus = IKYCSTATUS.PENDDING;
+        aadhar.id = req.body.aadhar.id;
+        let updateAadhar = await CrudManager.Update(aadhar);
+        console.log("if")
+        response.status = STATUS.OK;
+        response.result = response.result;
+      }
+      else {
+        console.log("else")
+        response.status = STATUS.AUTHERROR;
+        response.result = null
+      }
+      // }
+      res.send(response)
+    })
+
+    router.post("/aadhar/get-aadhar-by-id", EnsureAuth, EnsureUserLogin, ExtractAadhar, async (req, res) => {
+      let response: IResponse = {};
+      let aadhar: IAadhar = new IAadhar();
+      aadhar.id = req.body.aadhar.id;
+      response = await CrudManager.Read(aadhar);
+      if (response.result.length >=1 && response.error == null && response.status == STATUS.OK) {
+        response.status = STATUS.OK;
+        response.result = response.result;
+        response.error = null
+      }
+      else {
+        response.status = STATUS.AUTHERROR;
+        response.result = null;
+      }
+      res.send(response)
+    })
   }
 }

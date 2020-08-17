@@ -6,12 +6,13 @@ export class IAadhar {
   mobileNumber?: string;
   fullName?: string;
   dateofBirth?: string;
-  gender?:IGender
+  gender?: IGender
   image?: string;
   profileCompletion: boolean;
   accountCreated?: Date;
   profilePercentage?: number;
-  idProof?:string;
+  idProof?: string;
+  kycStatus?: number;
   schemaName = "Aadhar";
   schema = schemaDefinition;
 }
@@ -21,6 +22,13 @@ export class IGender {
   gender: string;
   selected: boolean;
 }
+
+export enum IKYCSTATUS {
+  PENDDING,
+  VERIFIED
+}
+
+
 
 export var schemaDefinition: Schema = new Schema({
   id: { type: String, default: shortid.generate, unique: true, required: true },
@@ -33,4 +41,5 @@ export var schemaDefinition: Schema = new Schema({
   profileCompletion: { type: Boolean, default: false, unique: false, required: false },
   profilePercentage: { type: Number, default: 0, select: true, unique: false, required: false },
   idProof: { type: String, default: "", unique: false, required: false },
+  kycStatus: { type: Number, default: null, unique: false, required: false }
 });
