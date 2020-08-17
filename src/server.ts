@@ -15,6 +15,8 @@ import mongoose = require("mongoose"); //import mongoose
 import {RouteManager} from "@managers/route.manager";
 import * as multer from 'multer';
 import { NextFunction, Request, Response, Router } from "express";
+var fs = require('fs');
+
 
 const path = require("path");
 var favicon=require('serve-favicon')
@@ -101,11 +103,18 @@ export class SrishtiServer
 
   // general settings
   private general() {
+    this.app.use(logger("dev"));
     //this.app.use(express.static("uploads"));
     //console.log("Passing :"+__dirname);
     this.app.use(express.static(path.join(__dirname, "../uploads")));
-    this.app.use(logger("dev"));
-    this.app.use(favicon(path.join(__dirname,  'public', 'favicon.ico')))
+    this.app.use(express.static(path.join(__dirname, "../uploads/kycDocuments")));
+    
+    /* 
+    It's Given a Error thats reason to commented below line 
+    */
+    // this.app.use(favicon(path.join(__dirname,  'public', 'favicon.ico'))) 
+    // heroku test  
+     
 
 
 
