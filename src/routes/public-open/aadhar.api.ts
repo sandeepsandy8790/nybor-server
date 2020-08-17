@@ -156,24 +156,24 @@ export class AadharRoutes {
       let response: IResponse = {};
       let a = req.body;
       let profile: IAadhar = new IAadhar();
-      let user:IAadhar=new IAadhar();
-      user.id=a.id;
+      let user: IAadhar = new IAadhar();
+      user.id = a.id;
       console.log(JSON.stringify(a) + "dataaaaa")
       profile.image = a.image;
       profile.id = a.id;
       response = await CrudManager.UpdateOne(profile);
       console.log(JSON.stringify(response))
       if (response.error == null && response.status == STATUS.OK) {
-        response=await CrudManager.Read(user);
+        response = await CrudManager.Read(user);
         if (response.result.length >= 1 && response.error == null) {
-          response.result=response.result
+          response.result = response.result
         }
         response.status = STATUS.OK;
-        
+
       }
-      else{
-        response.status=STATUS.IOERROR;
-        response.result=null
+      else {
+        response.status = STATUS.IOERROR;
+        response.result = null
       }
 
       res.send(response)
@@ -183,24 +183,24 @@ export class AadharRoutes {
       let response: IResponse = {};
       let a = req.body;
       let profile: IAadhar = new IAadhar();
-      let user:IAadhar=new IAadhar();
-      user.id=a.id;
+      let user: IAadhar = new IAadhar();
+      user.id = a.id;
       console.log(JSON.stringify(a) + "dataaaaa")
       profile.idProof = a.idProof;
       profile.id = a.id;
       response = await CrudManager.UpdateOne(profile);
       console.log(JSON.stringify(response))
       if (response.error == null && response.status == STATUS.OK) {
-        response=await CrudManager.Read(user);
+        response = await CrudManager.Read(user);
         if (response.result.length >= 1 && response.error == null) {
-          response.result=response.result
+          response.result = response.result
         }
         response.status = STATUS.OK;
-        
+
       }
-      else{
-        response.status=STATUS.IOERROR;
-        response.result=null
+      else {
+        response.status = STATUS.IOERROR;
+        response.result = null
       }
 
       res.send(response)
@@ -217,5 +217,77 @@ export class AadharRoutes {
       // }
 
     });
+
+    router.post("/changeMobileNumber", EnsureAuth, EnsureUserLogin, ExtractAadhar, AadharRoutes.AadharParser, async (req, res) => {
+      let response: IResponse = {};
+      console.log(JSON.stringify(req.body.app) + "req.bodyyyyyyy");
+      let reqdata = req.body.app;
+      let aadhar: IAadhar = new IAadhar()
+      let a: IAadhar = req.body.app;
+
+      response = await CrudManager.Read(a);
+      if (response.result.length >= 1 && response.error == null) {
+        console.log("already exists")
+        response.status = STATUS.IOERROR;
+        response.result = null;
+
+      } else {
+        console.log("new number")
+        aadhar.mobileNumber = reqdata.mobileNumber;
+        aadhar.id = req.body.aadhar.id;
+        res.send(await OtpPlugin.Send_OTP(aadhar));
+
+      }
+      res.send(response)
+    });
+
+    router.post(
+      "/validateOtp/changeMobileNumber",
+      EnsureAuth,
+      EnsureTemporaryLogin,
+      ExtractAadhar,
+      async (req, res) => {
+        let response: IResponse = {}
+        let response2:IResponse={}
+        console.log(JSON.stringify(req.body))
+        let otp = req.body.otp;
+        let mobile=req.body.mobileNumber;
+        let aadhar: IAadhar = req.body.aadhar;
+
+
+        response = await OtpPlugin.Validate_OTP_ChangeMobileNUmber(otp, aadhar, true)
+        console.log(response.token+"otp validation responseeee")
+        if(response.status==STATUS.OK && response.error==null){
+          console.log("first if")
+          let newaadhar:IAadhar=new IAadhar();
+          newaadhar.id=aadhar.id;
+          newaadhar.mobileNumber=mobile;
+          console.log(JSON.stringify(newaadhar)+"aadhaaaar")
+          response2=await CrudManager.Update(newaadhar);
+          console.log(JSON.stringify(response2)+"updation responseese")
+          if(response2.status==STATUS.OK && response2.error==null){
+            console.log("second ifff")
+            response.result=response2.result;
+            response.status=STATUS.OK;
+            response.token=response.token;
+          }
+          else{
+            console.log("second else")
+            response.result=null;
+            response.status=STATUS.IOERROR;
+            response.token=response.token;
+          }
+        }
+        else{
+          console.log("first else")
+          response.result = null;
+          response.error = CustomErrors.INVALID_OTP;
+          response.status = STATUS.AUTHERROR;
+          response.token=response.token;
+        }
+        res.send(response)
+      }
+      
+    );
   }
 }
