@@ -146,6 +146,51 @@ export class OtpPlugin{
         return response;
     }
 
+    public static async Validate_OTP_ChangeMobileNUmber(a, u:IAadhar,  o: boolean = true): Promise<IResponse> {
+        let response: IResponse;
+        let x: IOTP = new IOTP();
+ 
+        try {
+
+          
+                console.log('User =>=>' + JSON.stringify(u))
+                x.userID = u.id;
+                x.otp = a;
+                console.log('OTP =>' + JSON.stringify(x));
+                response = await CrudManager.Read(x);
+            
+            if (response.error == null && response.result.length == 1) {
+                console.log("OTP was Found");
+                if (o) {
+                    let o:IAadhar = new IAadhar();
+                    o.id = x.userID;
+              
+                    response.token = await this.GenerateLoginToken(u);
+                    response.result= u;
+                    response.error = null;
+                    response.status = STATUS.OK;
+                }
+                else {
+                    console.log("Temporary token else");
+                    response.result = await this.GenerateTemporaryToken(u); 
+                }
+            }
+            else {
+                console.error("No Account Was Found");
+                response.result = null;
+                response.error = CustomErrors.INVALID_OTP;
+                response.status = STATUS.AUTHERROR;
+
+            }
+        }
+        catch (error) {
+            console.error("Server Error :" + error);
+            response.result = null;
+            response.error = ErrorPlugin.SantizeError(error);
+            response.status = STATUS.IOERROR;
+        }
+        return response;
+    }
     public static GenerateTemporaryToken(a: IAadhar): string {
         var token = jwt.sign({ id: a.id }, process.env.loginTemporary, { expiresIn: process.env.loginTemporaryLife });
         return token;
