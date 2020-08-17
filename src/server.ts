@@ -13,8 +13,10 @@ import errorHandler = require("errorhandler");
 import methodOverride = require("method-override");
 import mongoose = require("mongoose"); //import mongoose
 import {RouteManager} from "@managers/route.manager";
+
 import * as multer from 'multer';
 import { NextFunction, Request, Response, Router } from "express";
+import { DIRECTORIES } from "@modules/aadhars/directories/directories.model";
 var fs = require('fs');
 
 
@@ -103,6 +105,12 @@ export class SrishtiServer
 
   // general settings
   private general() {
+
+    for (let i = 0; i < DIRECTORIES.length; i++) {
+      if (!fs.existsSync(path.join(__dirname, DIRECTORIES[i]))) {
+        fs.mkdirSync(path.join(__dirname, DIRECTORIES[i]));
+      }
+    }
     this.app.use(logger("dev"));
     //this.app.use(express.static("uploads"));
     //console.log("Passing :"+__dirname);

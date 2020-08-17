@@ -10,6 +10,8 @@ import { OtpPlugin, IOTP } from "@plugins/otp.plugin";
 
 const path = require('path');
 var multer = require('multer');
+var appRoot = require('app-root-path')
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, 'uploads')
@@ -19,6 +21,25 @@ var storage = multer.diskStorage({
   }
 })
 var upload = multer({
+  storage: storage,
+  limits: {
+    files: 1,
+    fieldSize: 50 * 1024 * 1024
+  }
+})
+
+
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, path.join(appRoot.path, 'uploads/kycDocuments'))
+  },
+  filename: function (req, file, cb) {
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname))
+  }
+})
+
+
+var upload2 = multer({
   storage: storage,
   limits: {
     files: 1,
@@ -289,5 +310,12 @@ export class AadharRoutes {
       }
       
     );
+
+    router.post("/kyc/kyc-file", upload2.single('kycFile'), async (req: any, res) => {
+
+      const { length: l, [l - 1]: fileName } = req.file.filename.split('/');
+      console.log("req.file", req.file, fileName , "kyc");
+      res.send({ ...req.file, name: fileName })
+  });
   }
 }
