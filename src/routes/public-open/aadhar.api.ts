@@ -8,6 +8,7 @@ import { Authentication } from "@middleware/authentication";
 import { IAadhar, IKYCSTATUS } from "@modules/aadhars/aadhar.model";
 import { OtpPlugin, IOTP } from "@plugins/otp.plugin";
 import { IKYC } from "@modules/aadhars/kyc/kyc.model";
+import { IAddFamily } from "@modules/aadhars/addfamily/addfamily.model";
 
 const path = require('path');
 var multer = require('multer');
@@ -100,6 +101,30 @@ export class AadharRoutes {
     }
 
   }
+  private static async FamilyParser(req, res, next) {
+
+    try {
+      let a: IAddFamily = new IAddFamily();
+      let schema = await CrudManager.Bootstrap(a);
+      /**
+       * Authorization Middlewares will set the Aadhar user
+       * in some cases. This will conflict with the schema parse
+       * So while parsing user received data, we will remove this and 
+       * re atatch it later
+       */
+      let payload = req.body;
+      req.body.payload = null;
+      console.log('********' + JSON.stringify(req.body) + '**********'); // JSON from UI 
+      a = await SchemaParser.parseRequest(a, schema, req.body);
+      req.body.app = a;
+      req.body.payload = payload; //attach it again
+      next();
+    }
+    catch (error) {
+      res.status(501).send({ message: error });
+    }
+
+  }
 
   public static async create(router: Router) {
     const EnsureAuth = Authentication.EnsureAuth;
@@ -107,6 +132,7 @@ export class AadharRoutes {
     const ExtractAadhar = Authentication.ExtractAadharCard;
     const OTPParser = this.OTPParser;
     const EnsureUserLogin = Authorization.EnsureUserLogin;
+    const FamilyParser = this.FamilyParser;
     /**
      * THIS IS A COMMON LOGIN ROUTE
      * SUCCESSFUL LOGIN DOESN'T GAURENTEE YOU ACCESS
@@ -362,7 +388,7 @@ export class AadharRoutes {
         let updateAadhar = await CrudManager.Update(aadhar);
         console.log("if")
         response.status = STATUS.OK;
-        response.result = response.result;
+        response.result = updateAadhar.result;
       }
       else {
         console.log("else")
@@ -378,7 +404,81 @@ export class AadharRoutes {
       let aadhar: IAadhar = new IAadhar();
       aadhar.id = req.body.aadhar.id;
       response = await CrudManager.Read(aadhar);
-      if (response.result.length >=1 && response.error == null && response.status == STATUS.OK) {
+      if (response.result.length >= 1 && response.error == null && response.status == STATUS.OK) {
+        response.status = STATUS.OK;
+        response.result = response.result;
+        response.error = null
+      }
+      else {
+        response.status = STATUS.AUTHERROR;
+        response.result = null;
+      }
+      res.send(response)
+    })
+    router.post("/aadhar/get-by-mobile", EnsureAuth, EnsureUserLogin, ExtractAadhar, AadharRoutes.AadharParser, async (req, res) => {
+      let response: IResponse = {};
+      let a: IAadhar = req.body.app;
+      response = await CrudManager.Read(a);
+      if (response.result.length >= 1 && response.error == null && response.status == STATUS.OK) {
+        response.status = STATUS.OK;
+        response.result = response.result;
+        response.error = null
+      }
+      else {
+        response.status = STATUS.AUTHERROR;
+        response.result = null;
+      }
+      res.send(response)
+    })
+
+    // family/add-family-member
+    router.post("/family/add-family-member", EnsureAuth, EnsureUserLogin, ExtractAadhar, FamilyParser, async (req, res) => {
+      let response: IResponse = {};
+      let family: IAddFamily = req.body.app;
+      response = await CrudManager.Create(family);
+      if (response.result != null && response.error == null && response.status == STATUS.OK) {
+        if (req.body.memberKYCStatus == IKYCSTATUS.PENDDING || req.body.memberKYCStatus == null) {
+          let aadhar: IAadhar = new IAadhar();
+          aadhar.id = req.body.memberAadharID;
+          aadhar.kycStatus = IKYCSTATUS.FAMILY_KYC;
+          let updatekyc = await CrudManager.Update(aadhar);
+        }
+        response.status = STATUS.OK;
+        response.result = response.result;
+        response.error = null
+      }
+      else {
+        response.status = STATUS.AUTHERROR;
+        response.result = null;
+      }
+      res.send(response)
+    })
+
+    router.post("/family/add-aadhar-add-family-member", EnsureAuth, EnsureUserLogin, ExtractAadhar, FamilyParser, async (req, res) => {
+      let response: IResponse = {};
+      let family: IAddFamily = req.body.app;
+      let aadhar: IAadhar = new IAadhar();
+      console.log(req.body.memberMobileNumber)
+      aadhar.mobileNumber = req.body.memberMobileNumber;
+      aadhar.kycStatus = req.body.memberKYCStatus;
+      response = await CrudManager.Create(aadhar);
+      if (response.result != null && response.error == null && response.status == STATUS.OK) {
+        response.status = STATUS.OK;
+        response.result = response.result;
+        response.error = null
+      }
+      else {
+        response.status = STATUS.AUTHERROR;
+        response.result = null;
+      }
+      res.send(response)
+    })
+
+    router.post("/family/get-family-by-id", EnsureAuth, EnsureUserLogin, ExtractAadhar, FamilyParser, async (req, res) => {
+      let response: IResponse = {};
+      let family: IAddFamily = req.body.app;
+      response = await CrudManager.Read(family);
+      if (response.result != null && response.error == null && response.status == STATUS.OK) {
         response.status = STATUS.OK;
         response.result = response.result;
         response.error = null

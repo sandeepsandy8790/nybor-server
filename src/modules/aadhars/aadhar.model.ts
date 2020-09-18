@@ -25,7 +25,8 @@ export class IGender {
 
 export enum IKYCSTATUS {
   PENDDING,
-  VERIFIED
+  VERIFIED,
+  FAMILY_KYC,
 }
 
 
