@@ -2,13 +2,17 @@
 EDIITNG IS NOT RECCOMMENDED AND EVEN IF YOU EDIT NOTHING HAPPENS.
 THE NEXT BUILD WOULD OVERWRITE IT */
 
-import { AadharRoutes as Route0 } from '@routes/public-open/aadhar.api'
+import { AdminRoutes as Route0 } from '@routes/admin-protected/admin.api'
+import { TribeRoutes as Route1 } from '@routes/admin-protected/tribe.api'
+import { AadharRoutes as Route2 } from '@routes/public-open/aadhar.api'
 
 export class RouteManager
 {
   public static CreateRouter(router){
 
       Route0.create(router);
+      Route1.create(router);
+      Route2.create(router);
 
 } 
  }

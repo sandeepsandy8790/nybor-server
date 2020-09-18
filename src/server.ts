@@ -16,7 +16,7 @@ import {RouteManager} from "@managers/route.manager";
 
 import * as multer from 'multer';
 import { NextFunction, Request, Response, Router } from "express";
-import { DIRECTORIES } from "@modules/aadhars/directories/directories.model";
+import { DIRECTORIES } from "@modules/directories/directories.model";
 var fs = require('fs');
 
 

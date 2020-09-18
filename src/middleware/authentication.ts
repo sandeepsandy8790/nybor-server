@@ -5,7 +5,7 @@ import { IUser } from "@plugins/user.plugin";
 
 const jwt = require('jsonwebtoken');
 import * as moment from 'moment-timezone'
-import { IAadhar } from "@modules/aadhars/aadhar.model";
+import { IAadhar } from "@modules/aadhar/aadhar.model";
 
 export class Authentication {
     /**

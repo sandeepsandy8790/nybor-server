@@ -5,9 +5,9 @@ import { IUser, IUserRole, UserPlugin } from "@plugins/user.plugin";
 import { Authorization } from "@middleware/authorization";
 import { CustomErrors } from "@plugins/error.plugin";
 import { Authentication } from "@middleware/authentication";
-import { IAadhar, IKYCSTATUS } from "@modules/aadhars/aadhar.model";
+import { IAadhar, IKYCSTATUS } from "@modules/aadhar/aadhar.model";
 import { OtpPlugin, IOTP } from "@plugins/otp.plugin";
-import { IKYC } from "@modules/aadhars/kyc/kyc.model";
+import { IKYC } from "@modules/kyc/kyc.model";
 
 const path = require('path');
 var multer = require('multer');
@@ -389,5 +389,22 @@ export class AadharRoutes {
       }
       res.send(response)
     })
+
+    router.post('/admin-getallAadhars', EnsureAuth, EnsureUserLogin, AadharRoutes.AadharParser, async (req, res) => {
+      let response: IResponse = {};
+      let a: IAadhar = new IAadhar()
+      console.log(JSON.stringify(a))
+      response = await CrudManager.Read(a);
+      if (response.result != null && response.error == null) {
+          response.result = response.result;
+          response.status = STATUS.OK;
+          response.error = null
+      }
+      else {
+          response.result = null;
+          response.status = STATUS.IOERROR
+      }
+      res.send(response)
+  });
   }
 }

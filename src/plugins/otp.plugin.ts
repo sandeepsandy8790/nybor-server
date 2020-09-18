@@ -1,4 +1,4 @@
-import { IAadhar } from "@modules/aadhars/aadhar.model";
+import { IAadhar } from "@modules/aadhar/aadhar.model";
 import { IResponse, CrudManager, STATUS } from "@managers/crud.manager";
 import { Schema } from 'mongoose';
 import { CustomErrors, ErrorPlugin } from "./error.plugin";
