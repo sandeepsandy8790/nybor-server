@@ -140,6 +140,10 @@ export class AadharRoutes {
      * THE UI HAS NO CONTROL ON SENDING AND GIVING ME ROLE
      * THE DATABASE DECIDES WHO IS WHO
      */
+
+     router.get('/heroku-test',async(req,res)=>{
+       res.send('Heroku Works....')
+     })
     router.post("/login", AadharRoutes.AadharParser, async (req, res) => {
       let response: IResponse = {};
       let a: IAadhar = req.body.app;
