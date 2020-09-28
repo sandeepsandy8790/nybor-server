@@ -24,7 +24,8 @@ export class IGender {
 }
 
 export enum IKYCSTATUS {
-  PENDDING,
+  NO,
+  PENDING,
   VERIFIED,
   FAMILY_KYC,
 }
@@ -42,5 +43,5 @@ export var schemaDefinition: Schema = new Schema({
   profileCompletion: { type: Boolean, default: false, unique: false, required: false },
   profilePercentage: { type: Number, default: 0, select: true, unique: false, required: false },
   idProof: { type: String, default: "", unique: false, required: false },
-  kycStatus: { type: Number, default: null, unique: false, required: false }
+  kycStatus: { type: Number, default: 0, unique: false, required: false }
 });

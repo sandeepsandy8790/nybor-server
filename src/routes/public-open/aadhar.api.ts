@@ -383,7 +383,7 @@ export class AadharRoutes {
       response = await CrudManager.Create(kyc_create);
       if (response.result != null && response.error == null) {
         let aadhar: IAadhar = new IAadhar();
-        aadhar.kycStatus = IKYCSTATUS.PENDDING;
+        aadhar.kycStatus = IKYCSTATUS.PENDING;
         aadhar.id = req.body.aadhar.id;
         let updateAadhar = await CrudManager.Update(aadhar);
         console.log("if")
@@ -437,7 +437,7 @@ export class AadharRoutes {
       let family: IAddFamily = req.body.app;
       response = await CrudManager.Create(family);
       if (response.result != null && response.error == null && response.status == STATUS.OK) {
-        if (req.body.memberKYCStatus == IKYCSTATUS.PENDDING || req.body.memberKYCStatus == null) {
+        if (req.body.memberKYCStatus == IKYCSTATUS.PENDING || req.body.memberKYCStatus == null) {
           let aadhar: IAadhar = new IAadhar();
           aadhar.id = req.body.memberAadharID;
           aadhar.kycStatus = IKYCSTATUS.FAMILY_KYC;
